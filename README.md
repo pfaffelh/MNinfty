@@ -6,6 +6,6 @@ Note that these files assume bi-allelic markers
 throughout. (Multi-allelic markers are treated in the manuscript,
 though.)
 
+tools.r: Here, all methods are implemented.
 
-
-tools.r: 
+f1.r--f7.r: Files that generate all figures.
