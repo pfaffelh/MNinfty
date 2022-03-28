@@ -1,8 +1,5 @@
 # Throughout, we assume bi-allelic data
 
-require("parallel")
-require("vcfR")
-
 bootstrap.sample <- function(test.sample, training.sample, training.samLoc, lim="MN") {
   locM = 1:ncol(training.sample)
   locN = 1:nrow(training.sample)
@@ -22,19 +19,6 @@ getfreqs = function(sample, samLoc){
 # value is a matrix admixture.proportions with nsam.mixed rows and npops columns;
 # admixture.proportion[i,k] gives the proportion of the genome of individual i coming from population k
 
-# Here, sample is a vector
-
-get.admixtureproportions.multi<-function(x, p, tol=1e-6, verbose = FALSE) {
-  res = NULL
-  for(i in 1:nrow(x)) {
-    if(verbose) cat("Method: admixture \t Name: ", rownames(x)[i])
-    res = rbind(res, get.admixtureproportions(x[i,], p, tol=tol, verbose=verbose))
-  }
-  colnames(res) = rownames(p)
-  rownames(res) = rownames(x)
-  res
-}
-
 # Here, x is a vector
 
 get.admixtureproportions<-function(x, p, tol=1e-6, verbose = FALSE) {
@@ -47,7 +31,7 @@ get.admixtureproportions<-function(x, p, tol=1e-6, verbose = FALSE) {
   
   # initialize admixture proportions
   res = as.vector(rdirichlet(1,K))
-#  res = rep(1/K, K)
+  #  res = rep(1/K, K)
   names(res) = rownames(p)
 
   j=1
@@ -83,44 +67,6 @@ get.loglik.admixture<-function(loc.x, p, q, sum=TRUE) {
   loc = t(p) %*% q
   if(sum) res = sum(log(choose(2, loc.x) * loc^loc.x * (1-loc)^(2-loc.x)))
   else res = log(choose(2, loc.x) * loc^loc.x * (1-loc)^(2-loc.x))
-  res
-}
-
-coords<-function(vec)  {
-   x = vec[1]
-   y = vec[2]
-   z = vec[3]
-   x*c(0,sqrt(3)-1/2) + y*c(-1,-1/2) + z*c(1,-1/2)
-}
-
-getData<-function(filenameDataVCFGZ, skip=0, windowSize=-1, inds, diploid = TRUE) {
-  if(diploid) {
-    trans = c(0,1,1,2, NA)
-    names(trans)=c("0|0", "0|1", "1|0", "1|1", "NA")
-  } else {
-    trans = c(0,1, NA)
-    names(trans)=c("0", "1", "NA")
-  }
-  samLoc = inds[,2]
-  
-  a = read.vcfR(filenameDataVCFGZ, skip = skip, nrows = windowSize)
-  genotypes = a@gt[,-1]
-  row.names(genotypes) = a@fix[,"ID"]
-  sample = matrix(0, ncol = nrow(genotypes), nrow = nrow(inds))
-  rownames(sample) = as.character(inds[,1])
-  colnames(sample) = as.character(a@fix[,"ID"])
-  for(k in 1:nrow(inds)) {
-    sample[k,] = as.numeric(trans[genotypes[,as.character(inds[k,1])]])
-  }
-  snps = colnames(sample) 
-  for(i in c(which(snps == ""),which(is.na(snps)))) {
-    colnames(sample)[i] = snps[i] = paste(filenameDataVCFGZ, "_", skip + i, sep="") # sometimes SNPs have no identifier
-  }
-  ref.allele = a@fix[,"REF"]
-  alt.allele = a@fix[,"ALT"]
-  names(ref.allele) = a@fix[,"ID"]
-  
-  res = list(sample = sample, samLoc = samLoc, ref.allele = ref.allele, alt.allele = alt.allele)
   res
 }
 
@@ -165,42 +111,7 @@ plotq<-function(x, y, ia, height, width, cols, var=NULL) {
   rect(x, y, x+width, y+height)
 }
 
-plotq.multi.old<-function(x, y, ia, height, width, cols, alpha=NULL) { # here, ia has multiple rows and we use transparency
-  if(is.null(alpha)) alpha = rep(1/nrow(ia), nrow(ia))
-  cols.rgb = col2rgb(cols)/255
-  for(i in 1:nrow(ia)) {
-    cols.loc = cols
-    for(j in 1:length(cols)) {
-      cols.loc[j] = rgb(cols.rgb[1,j], cols.rgb[2,j], cols.rgb[3,j], alpha[i])
-    }
-    plotq(x, y, ia[i,], height, width, cols.loc)
-  }
-}
-
-# here, ia has multiple rows and we use the first
-plotq.multi<-function(x, y, ia, height, width, cols, steps = 1000, weights=NULL) { 
-  if(is.null(weights)) weights = rep(1/nrow(ia), nrow(ia))
-  cols.rgb = col2rgb(cols)/255
-  npops = length(cols)
-  res = NULL
-  ia.sum = round(t(apply(ia, 1, cumsum)),3)
-  for(i in 1:steps) {
-    loc = t(apply(ia.sum, 1, function(x) min(npops,1+sum(x < i/steps))))
-#    cat("i = ", i, ", loc = ", loc, "\n")
-    res = rbind(res,t(round(cols.rgb[,loc] %*% weights,3)))
-  }
-
-  for(i in 1:steps) {
-    cols.loc = rgb(res[i,1], res[i,2], res[i,3])
-    rect(x+width*(i-1)/steps, y, x+width*i/steps, y+height, col = cols.loc, border = NA)
-  }
-  rect(x, y, x+width, y+height)
-}
-
-
-
-
-# if x==NULL, return Sigma from the manuscript, otherwise, return Sigma_x
+# Now we come to all matrices from the manuscript
 
 DeltaTilde<-function(p,q,x=NULL) { # p and q are vectors of length K, x \in {0,1,2}
   K = length(q)

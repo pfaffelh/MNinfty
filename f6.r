@@ -11,7 +11,7 @@ names(trans) = c("African", "European", "South Asian", "East Asian", "Middle Eas
 
 
 # load the test sample from one sheet of the Snipper-xls-file.
-a = read.csv("Forensic/Verogen ForenSeq DNA Signature Kit 56-AIM SGDP Samples.csv", header = FALSE)
+a = read.csv("Verogen ForenSeq DNA Signature Kit 56-AIM SGDP Samples.csv", header = FALSE)
 test.sample = as.matrix(a[2:nrow(a), 5:60])
 rownames(test.sample) = as.vector(a[2:nrow(a),4])
 for(i in 1:ncol(test.sample)) colnames(test.sample)[i] = as.vector((a[1,5:60])[1,i])
@@ -21,9 +21,8 @@ test.samLoc.pop = as.vector(a[2:nrow(a),3])
 test.samLoc = trans[test.samLoc.full]
 names(test.samLoc) = names(test.samLoc.full)
 
-
 # now load the training data from the other sheet of the Snipper-xls-file
-a = read.csv("Forensic/Verogen ForenSeq DNA Signature Kit 56-AIM Training Set Reference.csv", header = FALSE)
+a = read.csv("Verogen ForenSeq DNA Signature Kit 56-AIM Training Set Reference.csv", header = FALSE)
 training.sample = as.matrix(a[6:nrow(a), 4:(ncol(a)-1)])
 rownames(training.sample) = as.vector(a[6:nrow(a),3])
 for(i in 1:ncol(training.sample)) colnames(training.sample)[i] = as.vector((a[1,4:(ncol(a)-1)])[1,i])
