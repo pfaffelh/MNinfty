@@ -75,6 +75,14 @@ rdirichlet<-function(n, classes){
   res / rowSums(res)
 }
 
+bound<-function(x, lower=0, upper=1) {
+  res = x
+  for(i in 1:length(x)) {
+    res[i] = min(max(x[i],lower), upper)
+  }
+  res
+}
+
 # var is a matrix containing the eigenvalues to be drawn
 plotq<-function(x, y, ia, height, width, cols, var=NULL) {
   npops = length(ia)
@@ -92,18 +100,18 @@ plotq<-function(x, y, ia, height, width, cols, var=NULL) {
       loc2 = loc2/sum(loc2)
       eps = rnorm(1, mean=0, sd = 0.1*dy)
       if(abs(loc1[1]-loc2[1])>0.0001) {
-        lines(c(x+width*ia[1], x+width*loc2[1]), c(y+height-i*dy+eps, y+height-i*dy+eps), lwd=2, col="darkgrey")
-        lines(c(x+width*ia[1], x+width*loc1[1]), c(y+height-i*dy+eps, y+height-i*dy+eps), lwd=2, col="black")
-	lines(c(x+width*loc1[1], x+width*loc1[1]), c(y+height-i*dy+eps-.2*dy, y+height-i*dy+eps+.2*dy), lwd=2, col="black")
-	lines(c(x+width*loc2[1], x+width*loc2[1]), c(y+height-i*dy+eps-.2*dy, y+height-i*dy+eps+.2*dy), lwd=2, col="darkgrey")
+        lines(bound(c(x+width*ia[1], x+width*loc2[1]), lower=x, upper=x+width), c(y+height-i*dy+eps, y+height-i*dy+eps), lwd=2, col="darkgrey")
+        lines(bound(c(x+width*ia[1], x+width*loc1[1]), lower=x, upper=x+width), c(y+height-i*dy+eps, y+height-i*dy+eps), lwd=2, col="black")
+	lines(bound(c(x+width*loc1[1], x+width*loc1[1]), lower=x, upper=x+width), c(y+height-i*dy+eps-.2*dy, y+height-i*dy+eps+.2*dy), lwd=2, col="black")
+	lines(bound(c(x+width*loc2[1], x+width*loc2[1]), lower=x, upper=x+width), c(y+height-i*dy+eps-.2*dy, y+height-i*dy+eps+.2*dy), lwd=2, col="darkgrey")
       }	
       for(j in 2:(npops-1)) {
         eps = rnorm(1, mean=0, sd = 0.1*dy)
         if(abs(cumsum(loc1)[j]-cumsum(loc2)[j])>0.0001) {
-          lines(c(x+width*cumsum(ia)[j], x+width*cumsum(loc2)[j]), c(y+height-i*dy+eps, y+height-i*dy+eps), lwd=2, col="darkgrey")
-          lines(c(x+width*cumsum(ia)[j], x+width*cumsum(loc1)[j]), c(y+height-i*dy+eps, y+height-i*dy+eps), lwd=2, col="black")
-          lines(c(x+width*cumsum(loc1)[j], x+width*cumsum(loc1)[j]), c(y+height-i*dy+eps-.2*dy, y+height-i*dy+eps+.2*dy), lwd=2, col="black")
-          lines(c(x+width*cumsum(loc2)[j], x+width*cumsum(loc2)[j]), c(y+height-i*dy+eps-.2*dy, y+height-i*dy+eps+.2*dy), lwd=2, col="darkgrey")
+          lines(bound(c(x+width*cumsum(ia)[j], x+width*cumsum(loc2)[j]), lower=x, upper=x+width), c(y+height-i*dy+eps, y+height-i*dy+eps), lwd=2, col="darkgrey")
+          lines(bound(c(x+width*cumsum(ia)[j], x+width*cumsum(loc1)[j]), lower=x, upper=x+width), c(y+height-i*dy+eps, y+height-i*dy+eps), lwd=2, col="black")
+          lines(bound(c(x+width*cumsum(loc1)[j], x+width*cumsum(loc1)[j]), lower=x, upper=x+width), c(y+height-i*dy+eps-.2*dy, y+height-i*dy+eps+.2*dy), lwd=2, col="black")
+          lines(bound(c(x+width*cumsum(loc2)[j], x+width*cumsum(loc2)[j]), lower=x, upper=x+width), c(y+height-i*dy+eps-.2*dy, y+height-i*dy+eps+.2*dy), lwd=2, col="darkgrey")
 	}
       }
     }
