@@ -1,4 +1,4 @@
-# F3: explanation plot for variance bars
+# F3: explanation plot for variance bars, and triangle plots
 library("colorspace") 
 source("tools.r")
 
@@ -64,3 +64,36 @@ for(i in 1:2) {
 
 dev.off()
 
+pdf(file = "f3a.pdf", width=7, height=8, family="Times", onefile=FALSE)
+par(ann=TRUE, cex=1.4, mar = c(0,0,0,0))
+plot(c(-1.65, 1.3), c(-1.9, 1.5), type="n", axes=FALSE, main="", xlab="", ylab="")
+
+lines(c(0, 1), c(sqrt(3)-1/2, -1/2))
+lines(c(0, -1), c(sqrt(3)-1/2, -1/2))
+lines(c(-1, 1), c(-1/2, -1/2))
+
+points(0, 1.4, col=cols[1], cex=8, pch=20)
+points(-1.2, -.5, col=cols[2], cex=8, pch=20)
+points(1.2, -.5, col=cols[3], cex=8, pch=20)
+#text(0, 1.4, "A", col="white", cex=2)
+#text(-1.2, -1/2, "B", col="white", cex=2)
+#text(1.2, -1/2, "C", cex=2)
+
+cols=rainbow(3)
+
+co = coords(q.hat) 
+
+points(co[1], co[2], pch=20, col = cols[1], cex=2)
+
+co1 = coords(q.hat)
+co2 = coords(q.hat+var[1,])
+co3 = coords(q.hat+var[2,])
+co4 = coords(q.hat-var[1,])
+co5 = coords(q.hat-var[2,])
+  
+arrows(co1[1], co1[2], co2[1], co2[2], length=0.15, cex=3, lwd=2)
+arrows(co1[1], co1[2], co3[1], co3[2], length=0.15, cex=3, lwd=2)
+arrows(co1[1], co1[2], co4[1], co4[2], col="black", length=0.15, cex=3, lwd=2)
+arrows(co1[1], co1[2], co5[1], co5[2], length=0.15, col="black", cex=3, lwd=2)
+
+dev.off()

@@ -8,6 +8,14 @@ bootstrap.sample <- function(test.sample, training.sample, training.samLoc, lim=
   list(test.sample=test.sample[locM], training.sample = training.sample[locN,locM], training.samLoc = training.samLoc[locN])
 }
 
+# compute coordinates in the triangle plot
+coords<-function(vec)  {
+   x = vec[1]
+   y = vec[2]
+   z = vec[3]
+   x*c(0,sqrt(3)-1/2) + y*c(-1,-1/2) + z*c(1,-1/2)
+}
+
 # compute frequencies from sample along samLoc
 getfreqs = function(sample, samLoc){
   t(simplify2array(by(sample,samLoc,colMeans,na.rm=TRUE))) / 2
