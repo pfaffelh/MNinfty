@@ -7,7 +7,7 @@ K=length(q)
 set.seed(121)
 iterations=1000
 
-comp = FALSE
+comp = TRUE
 
 pdf(file = "f1.pdf", width=14, height=3, family="Times", onefile=FALSE)
 par(ann=TRUE, cex=1.4, mar = c(0,0,0,0))

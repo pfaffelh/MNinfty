@@ -47,7 +47,6 @@ for(AIM in colnames(full.sample)) {
   }  
 }
 
-
 # Determine reference alleles (by first occurrence in the training set)
 ref.allele = training.sample[1,]
 for(j in 1:ncol(training.sample)) {
@@ -103,20 +102,15 @@ for(k in 1:(K-1)) {
     q[k]=q[l] = 0.5
     t[k]=1/sqrt(2)
     t[l]=-1/sqrt(2)
-    res = c(res, (t %*% (Sigma(p,q) - q %*% t(q)) %*% t)[1,1]/2/M)
+#    res = c(res, (t %*% (Sigma(p,q) - q %*% t(q)) %*% t)[1,1]/2/M)
 #    res[k,l] = (Sigma(p,q) - q %*% t(q))[k,l]
+    res = c(res, (Sigma(p,q) - q %*% t(q))[k,l]/2/M)
   }
 }
 
 covariances = data.frame(x=x, y=y, cov=res)
 library(ggplot2)
-ggplot(data = covariances, aes(x=x, y=y, fill = cov))+
-geom_tile() + ylim(rev(levels(covariances$y))) + xlab("") + ylab("") +
- scale_fill_gradient2(low = "white", high = "blue",
-   limit = c(0,max(res)), space = "Lab", 
-   name="-Covariance") + theme_minimal() +
- coord_fixed() +
-  theme(text = element_text(family = "Times"))
+ggplot(data = covariances, aes(x=x, y=y, fill = cov)) + geom_tile() + xlab("") + ylab("") + scale_fill_gradient2(low = "blue", high = "white", limit = c(min(res), max(res)), space = "Lab", name="-Covariance") + theme_minimal() + coord_fixed() + theme(text = element_text(family = "Times")) + ylim(rev(unique(covariances$y))) 
 
 ggsave("f6.pdf", width=4, height=4)
 
